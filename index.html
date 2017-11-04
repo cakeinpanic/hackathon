@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Как написать postcss-плагин</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=792, user-scalable=no">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<link rel="stylesheet" href="node_modules/shower-bright/styles/screen.css">
+	<link rel="stylesheet" href="inc/styles/custom.css">
+</head>
+<body class="list">
+<header class="caption">
+	<h1>Как написать postcss-плагин</h1>
+	<p>Катерина Павленко, Devexperts</p>
+</header>
+<section class="slide slide-start">
+	<div>
+		<h1>Как написать <br> postcss-плагин</h1>
+
+		<p  class="cred">
+            Катерина Павленко, Devexperts
+            <br>
+		<span class="date">spb-frontend plugin hackathon, 29.11.15</span></p>
+	</div>
+</section>
+<section class="slide slide-start">
+	<div>
+		<div class="tweet">
+		<blockquote class="twitter-tweet" lang="ru"><p lang="ru" dir="ltr">Даже если ночью в шкафу завернуться в одеяло и шепнуть «пост-цсс», то с верхней полки всё равно высунется Ситник и скажет, что есть плагин.</p>&mdash; Вадим Макеев (@pepelsbey) <a href="https://twitter.com/pepelsbey/status/663131603342893056">7 ноября 2015</a></blockquote>
+		<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+		</div>
+	</div>
+</section>
+<section class="slide">
+	<div>
+		<h2>Что может делать плагин?</h2>
+		<ul>
+			<li>Изменять css (например, <a hre="https://github.com/cssnext/cssnext">cssnext</a>, <a hre="https://github.com/TrySound/postcss-inline-svg">postcss-inline-svg</a>)</li>
+			<li>Изменять другие файлы (<a href="https://github.com/devex-web-frontend/postcss-assets-rebase">postcss-assets-rebase</a>, <a href="https://github.com/2createStudio/postcss-sprites">postcss-sprites</a>)</li>
+			<li>Просто осмотреться (<a href="https://github.com/postcss/postcss-bem-linter">postcss-bem-linter</a>, <a href="https://github.com/devex-web-frontend/postcss-regexp-detect">postcss-regexp-detect</a>)</li>
+		</ul>
+		<img src="inc/images/plugin.png">
+	</div>
+</section>
+<section class="slide slide-ast">
+	<div>
+		<h2>Cинтаксическое дерево</h2>
+
+			<ul class="js">
+				<li>root</li>
+				<li>rule</li>
+				<li>decl</li>
+				<li>comment</li>
+                <li>atrule</li>
+			</ul>
+		<img src="inc/images/ast-1.png">
+	</div>
+</section>
+
+<section class="slide slide-code">
+	<div>
+		<h2><a href="https://sneakertack.github.io/postcss-playground/">Cинтаксическое дерево</a></h2>
+
+		<pre class="before">
+			<code class="css">
+				html, body.home {
+					margin: 10px 20px;
+				}
+			</code>
+		</pre>
+		<div class="arrow"></div>
+		<pre class="after">
+			<code class="js">
+				type: 'root',
+				nodes: [
+					{
+						type: 'rule',
+						selectors: 'html, body.home',
+						nodes: [{
+							type: 'decl',
+							prop: 'margin',
+							value: '10px 20px'
+						}]
+					}
+				]
+			</code>
+		</pre>
+
+	</div>
+</section>
+
+
+<section class="slide  slide-code">
+	<div>
+		<h2><a href="https://github.com/postcss/postcss-plugin-boilerplate">postcss plugin boilerplate</a></h2>
+
+		<pre>
+
+			<code class="js">
+				var postcss = require('postcss');
+
+				module.exports = postcss.plugin('PLUGIN_NAME', function (opts) {
+					opts = opts || {};
+					// Work with options here
+					return function (css, result) {
+						// Transform CSS AST here
+					};
+				});
+			</code>
+		</pre>
+		<img class="boiler" src="inc/images/boiler.png">
+
+
+	</div>
+</section>
+
+<section class="slide  slide-code">
+	<div>
+		<h2><a href="https://github.com/postcss/postcss/blob/master/docs/api.md#nodes-common-methods">node</a></h2>
+		<ul class="js">
+			<li>next, prev, remove, replaceWith, moveTo</li>
+			<li>clone, cloneBefore, cloneAfter</li>
+		</ul>
+		<h2><a href="https://github.com/postcss/postcss/blob/master/docs/api.md#nodes-common-methods">container</a> (node with children)</h2>
+		<ul class="js">
+			<li>prepend, append, removeChild, insertBefore, insertAfter</li>
+			<li>every, some, each</li>
+		</ul>
+	</div>
+</section>
+
+<section class="slide  slide-code">
+	<div>
+		<h2><a href="https://github.com/postcss/postcss/blob/master/docs/api.md#nodes-common-methods">container</a></h2>
+		<ul class="js">
+			<li>walk</li>
+			<li>walkRules, walkAtRules, waltDecls, walkComments</li>
+		</ul>
+	</div>
+</section>
+
+
+<section class="slide  slide-code">
+	<div>
+		<h2><a href="https://github.com/postcss/postcss/blob/master/docs/api.md#result-class">result</a></h2>
+			<ul class="js">
+				<li>result.warn(text, opts) - кинуть warning</li>
+				<li>result.opts = { from, to } (если были предоставлены)</li>
+				<br>
+				<li>result.messages - массив сообщений</li>
+				<li>result.processor.plugins - список всех плагинов</li>
+                <li>result.root - изначальный root</li>
+			</ul>
+
+
+	</div>
+</section>
+
+
+
+<section class="slide  slide-code slide-carl">
+	<div>
+		<h2>Самый бесполезный плагин в мире</h2>
+		<pre>
+			<code class="js">
+				module.exports = postcss.plugin('postcss-carl', function (opts) {
+					return function (css, result) {
+						css.walkRules(function(rule) {
+							rule.selector = rule.selector + ', CARL';
+						});
+					};
+				});
+
+			</code>
+		</pre>
+
+        <div class="test">
+                <pre class="before">
+                    <code class="css">
+                        .zombie {
+                             color: red;
+                        }
+                    </code>
+                </pre>
+                <div class="arrow"></div>
+                <pre class="after">
+                    <code class="css">
+                        .zombie, CARL {
+                            color: red;
+                        }
+                    </code>
+                </pre>
+                <img src="https://imgflip.com/readImage?iid=40269082">
+
+        </div>
+    </div>
+</section>
+
+<section class="slide  slide-code">
+	<div>
+		<h2>Второй по бесполезности плагин в мире</h2>
+		<pre>
+			<code class="js">
+				css.walkDecls(function(decl) {
+					if (decl.prop === 'width') {
+						var comment = postcss.comment({text: 'Upside down!'});
+						decl.prop = 'height';
+						decl.parent.insertBefore(decl, comment);
+					}
+				});
+
+			</code>
+		</pre>
+		<div class="lenta">¯\_(ツ)_/¯ </div>
+	</div>
+</section>
+
+
+<section class="slide slide-log">
+	<div>
+		<h2>Как рассказать о важном?</h2>
+		<pre><code class="js">console.log() //bad </code></pre>
+		<ul>
+			<li>покажется только если есть консоль</li>
+			<li>невозможно отключить</li>
+			<li>может требовать дополнительных зависимостей (например, <a href="https://github.com/chalk/chalk/issues/45">chalk</a>)</li>
+		</ul>
+		<pre><code class="js">result.warn(); //good!</code></pre>
+		<ul>
+            <li>один плагин – одно действие</li>
+			<li>можно выключать-включать-фильтровать-красить снаружи</li>
+            <li>легко тестировать</li>
+		</ul>
+        <img src="https://i.guim.co.uk/img/media/7ae5e6196bf2f3e76a3612ad84770982854666cf/0_260_3113_2372/master/3113.jpg?w=620&q=85&auto=format&sharp=10&s=86eb69675a5ebbd81a740e69c55a50d8">
+	</div>
+</section>
+
+
+<section class="slide slide-log">
+	<div>
+		<h2>Тестирование</h2>
+		<ul>
+		<li>Сравнение результата работы плагина с эталонным результатом</li>
+			<li>Не забыть протестировать логгирование</li>
+			<li>Можно использовать любой фреймворк (в boilerplate – <a href="https://github.com/sindresorhus/ava">ava</a>)</li>
+            <li>Использование тестов как документации</li>
+		</ul>
+	</div>
+</section>
+
+
+<section class="slide">
+	<div>
+		<h2><a href="https://github.com/postcss/postcss/blob/master/docs/guidelines/plugin.md">Гайдлайны</a></h2>
+		<ul>
+			<li>один плагин – одно действие</li>
+			<li>тесты</li>
+			<li>документация (с подробными примерами)</li>
+			<li>правильное использование логов</li>
+		</ul>
+
+	</div>
+</section>
+
+<section class="slide">
+	<div>
+		<h2>Ссылки</h2>
+        Презентация: <a href="http://cakeinpanic.github.io/hackathon/">http://cakeinpanic.github.io/hackathon/</a>
+		<ul>
+            <li><a htrf="https://sneakertack.github.io/postcss-playground/">postcss AST parser</a></li>
+			<li><a href="https://github.com/postcss/postcss/blob/master/docs/api.md">postcss plugin API</a></li>
+			<li><a href="https://github.com/postcss/postcss-plugin-boilerplate">postcss plugin boilerplate</a></li>
+			<li><a href="https://github.com/postcss/postcss/blob/master/docs/guidelines/">postcss plugin guidelines</a></li>
+			<li><a href="https://github.com/postcss/postcss#plugins">список плагинов</a></li>
+
+		</ul>
+
+	</div>
+</section>
+
+<p class="badge"><a href="https://github.com/cakeinpanic/hackathon">Fork me on Github</a></p>
+
+<script src="node_modules/shower-core/shower.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/highlight.js/8.9.1/styles/default.min.css">
+<link rel="stylesheet" href="inc/styles/tomorrow.css">
+
+<script src="//cdn.jsdelivr.net/highlight.js/8.9.1/highlight.min.js"></script>
+
+<script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+</html>

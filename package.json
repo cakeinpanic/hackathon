@@ -9,9 +9,7 @@
   "author": "Devexperts <web-frontend@devexperts.com>",
   "license": "ISC",
   "dependencies": {
-    "highlight.js": "^8.9.1",
     "shower-bright": "^1.0.11",
-    "shower-core": "^1.0.7",
-    "shower-ribbon": "^1.0.11"
+    "shower-core": "^1.0.7"
   }
 }
